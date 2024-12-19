@@ -1,13 +1,24 @@
 'use client'
 
-import {useRef} from 'react';
+import {FormEvent, useRef, useState, useTransition} from 'react';
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {Search} from "lucide-react";
+import {Loader2, Search} from "lucide-react";
+import {useRouter} from "next/navigation";
 
 const SearchBar = () => {
 
     const inputRef = useRef<HTMLInputElement>(null);
+    const [query, setQuery] = useState("");
+
+    const [isSearching, startTransition] = useTransition()
+    const router = useRouter();
+
+    const search = () => {
+        startTransition(() => {
+            router.push(`/search?q=${query}`)
+        })
+    }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Escape") {
@@ -15,12 +26,22 @@ const SearchBar = () => {
         }
     }
 
+    const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        search();
+    }
+
     return (
         <div className="relative w-full h-14 flex flex-col">
-            <div className="relative h-14 z-10 rounded-md">
-                <Input ref={inputRef} onKeyDown={handleKeyDown} className="absolute inset-0 h-full"/>
-                <Button className="absolute right-0 inset-y-0 h-full rounded-l-none"><Search className="h-6 w-6"/></Button>
-            </div>
+            <form onSubmit={onSubmit} className="relative h-14 z-10 rounded-md">
+                <Input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)}
+                       onKeyDown={handleKeyDown}
+                       disabled={isSearching}
+                       className="absolute inset-0 h-full"/>
+                <Button size="sm" disabled={isSearching} className="absolute right-0 inset-y-0 h-full rounded-l-none">
+                    {isSearching ? <Loader2 className="animate-spin h-6 w-6"/> : <Search className="h-6 w-6"/>}
+                </Button>
+            </form>
         </div>
     );
 };
