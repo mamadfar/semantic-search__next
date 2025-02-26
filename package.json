@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "sh": "pnpm dlx shadcn@latest add",
+    "sh": "pnpm dlx shadcn@latest add"
   },
   "dependencies": {
     "@faker-js/faker": "^9.5.0",
